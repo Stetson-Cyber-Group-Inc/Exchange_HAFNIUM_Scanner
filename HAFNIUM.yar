@@ -1,3 +1,5 @@
+// thank you to Microsoft, Volexity and Florian Roth for the yara rules 
+
 rule WEBSHELL_ASP_Embedded_Mar21_1 {
    meta:
       description = "Detects ASP webshells"
