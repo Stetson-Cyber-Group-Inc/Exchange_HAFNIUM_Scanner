@@ -186,7 +186,7 @@ rule WEBSHELL_CVE_2021_27065_Webshells {
       $internalauthenticationmethods = "internalauthenticationmethods" ascii wide nocase
       $extendedprotectiontokenchecking = "extendedprotectiontokenchecking" ascii wide nocase
    condition:
-      filesize < 10KB and any of ($script*) and ($externalurl or $internalurl) and $internalauthenticationmethods and $extendedprotectiontokenchecking
+      filesize < 50KB and any of ($script*) and ($externalurl or $internalurl) and $internalauthenticationmethods and $extendedprotectiontokenchecking
 }
 
 rule APT_MAL_ASPX_HAFNIUM_Chopper_Mar21_3 {
@@ -236,7 +236,6 @@ rule APT_HAFNIUM_ForensicArtefacts_WER_Mar21_1 {
       all of them
 }
 
-
 rule EXPL_LOG_CVE_2021_27065_Exchange_Forensic_Artefacts_Mar21_1 : LOG {
    meta:
       description = "Detects forensic artefacts found in HAFNIUM intrusions exploiting CVE-2021-27065"
@@ -271,7 +270,7 @@ rule LOG_APT_HAFNIUM_Exchange_Log_Traces_Mar21_1 : LOG {
       date = "2021-03-04"
       score = 65
    strings:
-      $xr1 = /POST \/(ecp\/y\.js|ecp\/main\.css|ecp\/default\.flt)[^\n]{100,600} (200|301|302) /
+      $xr1 = /POST \/(ecp\/y\.js|ecp\/main\.css|ecp\/default\.flt|ecp\/auth\/w\.js|owa\/auth\/w\.js)[^\n]{100,600} (200|301|302) /
 
       $xr3 = /POST \/owa\/auth\/Current\/[^\n]{100,600} (DuckDuckBot\/1\.0;\+\(\+http:\/\/duckduckgo\.com\/duckduckbot\.html\)|facebookexternalhit\/1\.1\+\(\+http:\/\/www\.facebook\.com\/externalhit_uatext\.php\)|Mozilla\/5\.0\+\(compatible;\+Baiduspider\/2\.0;\+\+http:\/\/www\.baidu\.com\/search\/spider\.html\)|Mozilla\/5\.0\+\(compatible;\+Bingbot\/2\.0;\+\+http:\/\/www\.bing\.com\/bingbot\.htm\)|Mozilla\/5\.0\+\(compatible;\+Googlebot\/2\.1;\+\+http:\/\/www\.google\.com\/bot\.html|Mozilla\/5\.0\+\(compatible;\+Konqueror\/3\.5;\+Linux\)\+KHTML\/3\.5\.5\+\(like\+Gecko\)\+\(Exabot-Thumbnails\)|Mozilla\/5\.0\+\(compatible;\+Yahoo!\+Slurp;\+http:\/\/help\.yahoo\.com\/help\/us\/ysearch\/slurp\)|Mozilla\/5\.0\+\(compatible;\+YandexBot\/3\.0;\+\+http:\/\/yandex\.com\/bots\)|Mozilla\/5\.0\+\(X11;\+Linux\+x86_64\)\+AppleWebKit\/537\.36\+\(KHTML,\+like\+Gecko\)\+Chrome\/51\.0\.2704\.103\+Safari\/537\.3)/
       $xr4 = /POST \/ecp\/[^\n]{100,600} (ExchangeServicesClient\/0\.0\.0\.0|python-requests\/2\.19\.1|python-requests\/2\.25\.1)[^\n]{200,600} (200|301|302) /
@@ -296,4 +295,40 @@ rule LOG_Exchange_Forensic_Artefacts_CleanUp_Activity_Mar21_1 : LOG {
       $s3 = "&echo [S]"
    condition:
       1 of ($x*) or 2 of them
+}
+
+rule EXPL_LOG_CVE_2021_27055_Exchange_Forensic_Artefacts : LOG {
+   meta:
+      description = "Detects suspicious log entries that indicate requests as described in reports on HAFNIUM activity"
+      author = "Zach Stanford - @svch0st, Florian Roth"
+      reference = "https://www.microsoft.com/security/blog/2021/03/02/hafnium-targeting-exchange-servers/#scan-log"
+      reference_2 = "https://www.praetorian.com/blog/reproducing-proxylogon-exploit/"
+      date = "2021-03-10"
+      score = 65
+   strings:
+      $x1 = "ServerInfo~" ascii wide
+
+      $sr1 = /\/ecp\/[a-zA-Z0-9]\.js/ ascii wide
+
+      $s1 = "/ecp/auth/w.js" ascii wide 
+      $s2 = "/owa/auth/w.js" ascii wide
+      $s3 = "/owa/auth/x.js" ascii wide
+      $s4 = "/ecp/main.css" ascii wide
+      $s5 = "/ecp/default.flt" ascii wide
+      $s6 = "/owa/auth/Current/themes/resources/logon.css" ascii wide
+   condition:
+      $x1 and 1 of ($s*)
+}
+
+rule LOG_CVE_2021_27055_Exchange_Forensic_Artefacts_Mar21_2 : LOG {
+   meta:
+      description = "Detects suspicious log entries that indicate requests as described in reports on HAFNIUM activity"
+      author = "Florian Roth"
+      reference = "https://www.praetorian.com/blog/reproducing-proxylogon-exploit/"
+      date = "2021-03-10"
+      score = 65
+   strings:
+      $sr1 = /GET \/rpc\/ &CorrelationID=<empty>;&RequestId=[^\n]{40,600} (200|301|302)/
+   condition:
+      $sr1
 }
