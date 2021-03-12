@@ -55,11 +55,14 @@ Expand-Archive yara64.zip -Force
 
 Write-host "Testing computer for HAFNIUM IOC's..."
 
-Get-ChildItem -Recurse -filter *.* 'C:\Windows\system32\' 2> $null | ForEach-Object { Write-Host -foregroundcolor "green" "Scanning" $_.FullName $_.Name; ./yara64/yara64.exe -d filename=$_.Name HAFNIUM.yar $_.FullName 2> $null >>Warnings.txt}
-Get-ChildItem -Recurse -filter *.* 'C:\Windows\syswow64\' 2> $null | ForEach-Object { Write-Host -foregroundcolor "green" "Scanning" $_.FullName $_.Name; ./yara64/yara64.exe -d filename=$_.Name HAFNIUM.yar $_.FullName 2> $null >>Warnings.txt}
+#Get-ChildItem -Recurse -filter *.* 'C:\Windows\system32\' 2> $null | ForEach-Object { Write-Host -foregroundcolor "green" "Scanning" $_.FullName $_.Name; ./yara64/yara64.exe -d filename=$_.Name HAFNIUM.yar $_.FullName 2> $null >>Warnings.txt}
+#Get-ChildItem -Recurse -filter *.* 'C:\Windows\syswow64\' 2> $null | ForEach-Object { Write-Host -foregroundcolor "green" "Scanning" $_.FullName $_.Name; ./yara64/yara64.exe -d filename=$_.Name HAFNIUM.yar $_.FullName 2> $null >>Warnings.txt}
 Get-ChildItem -Recurse -filter *.* 'C:\Windows\temp\' 2> $null | ForEach-Object { Write-Host -foregroundcolor "green" "Scanning" $_.FullName $_.Name; ./yara64/yara64.exe -d filename=$_.Name HAFNIUM.yar $_.FullName 2> $null >>Warnings.txt}
 Get-ChildItem -Recurse -filter *.* 'C:\inetpub\' 2> $null | ForEach-Object { Write-Host -foregroundcolor "green" "Scanning" $_.FullName $_.Name; ./yara64/yara64.exe -d filename=$_.Name HAFNIUM.yar $_.FullName 2> $null >>Warnings.txt}
 Get-ChildItem -Recurse -filter *.* $env:exchangeinstallpath 2> $null | ForEach-Object { Write-Host -foregroundcolor "green" "Scanning" $_.FullName $_.Name; ./yara64/yara64.exe -d filename=$_.Name HAFNIUM.yar $_.FullName 2> $null >>Warnings.txt}
 Get-ChildItem -Recurse -filter *.* 'C:\Program Files (x86)\fireeye\' 2> $null | ForEach-Object { Write-Host -foregroundcolor "green" "Scanning" $_.FullName $_.Name; ./yara64/yara64.exe -d filename=$_.Name HAFNIUM.yar $_.FullName 2> $null >>Warnings.txt}
+Get-ChildItem -Recurse -filter *.* 'C:\temp\' 2> $null | ForEach-Object { Write-Host -foregroundcolor "green" "Scanning" $_.FullName $_.Name; ./yara64/yara64.exe -d filename=$_.Name HAFNIUM.yar $_.FullName 2> $null >>Warnings.txt}
+Get-ChildItem -Recurse -filter *.* 'C:\Exchange\' 2> $null | ForEach-Object { Write-Host -foregroundcolor "green" "Scanning" $_.FullName $_.Name; ./yara64/yara64.exe -d filename=$_.Name HAFNIUM.yar $_.FullName 2> $null >>Warnings.txt}
+Get-ChildItem  -filter *.* 'C:\' 2> $null | ForEach-Object { Write-Host -foregroundcolor "green" "Scanning" $_.FullName $_.Name; ./yara64/yara64.exe -d filename=$_.Name HAFNIUM.yar $_.FullName 2> $null >>Warnings.txt}
 
 if ((Get-Item 'Warnings.txt').length -gt 10) { start Warnings.txt }
